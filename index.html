@@ -23,25 +23,19 @@
       <span>개인 페이지</span>
       <button>+</button>
     </div>
-    <div class="DocumentTree">
-      <div>
-        루트문서
-        <div class="DocumentItem">
-          하위문서
-        </div>
-      </div>
-    </div>
-
+    <ul>
+      루트문서
+      <li>
+        하위문서
+      </li>
+    </ul>
   </aside>
-
   <main>
-    <div class="EditorContainer">
-      <h1>편집기</h1>
-      <div class="EditorContent" contenteditable="true">
-        문서를 선택해주세요.
-      </div>
-    </div>
+    <textarea class="EditorContainer" value="편집기">
+
+    </textarea>
   </main>
+  <script type="module" src="./src/index.js"></script>
 </body>
 
 </html>

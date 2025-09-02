@@ -15,15 +15,6 @@ main {
   flex-grow: 1;
 }
 
-
-.DocumentItem {
-  margin-left: 30px;
-}
-
-.DocumentTree {
-  padding-top: 20px;
-}
-
 .EditorContainer {
   margin: 0px;
   width: 100%;
