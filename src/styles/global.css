@@ -1,0 +1,64 @@
+body {
+  display: flex;
+  margin: 0;
+  font-family: sans-serif;
+  height: 100vh;
+  background-color: #f6f6f6;
+}
+
+/* 왼쪽 사이드바 영역 */
+aside {
+  width: 250px;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.search-container {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.document-tree {
+  flex-grow: 1;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+.document-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+/* 오른쪽 편집기 영역 */
+main {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.editor-container {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+}
+
+.editor-container h1 {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
