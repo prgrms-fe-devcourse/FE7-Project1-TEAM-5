@@ -2,35 +2,46 @@
 <html lang="ko">
 
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Team5</title>
+
   <link rel="stylesheet" href="./src/styles/global.css">
 </head>
 
 <body>
   <aside>
-    <div class="sidebar-header">
-      너드호소인들의 Notion
+    <div>
+      <h3>너드호소인들의 Notion</h3>
     </div>
-    <div class="search-container">
-      검색기능
+    <div class="SearchContainer">
+      <input type="text" placeholder="검색기능"><button>⌕</button>
     </div>
-    <div class="document-item">
+    <div>
       <span>개인 페이지</span>
       <button>+</button>
     </div>
-    <div class="document-tree">
-      <span>루트 문서</span>
+    <div class="DocumentTree">
+      <div>
+        루트문서
+        <div class="DocumentItem">
+          하위문서
+        </div>
+      </div>
     </div>
+
   </aside>
 
   <main>
-    <div class="editor-container">
+    <div class="EditorContainer">
       <h1>편집기</h1>
+      <div class="EditorContent" contenteditable="true">
+        문서를 선택해주세요.
+      </div>
     </div>
   </main>
 </body>
-ㅇ
 
 </html>
