@@ -1,11 +1,17 @@
 import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
 
-const ACTION = { SELECT: "select", ADD_CHILD: "add-child", DELETE: "delete" };
+const ACTION = {
+  SELECT: "select",
+  ADD_CHILD: "add-child",
+  DELETE: "delete",
+  ADD_ROOT: "add-root",
+};
 
 // 사이드바를 만들어 주는 함수
 export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
   const mountElement = document.querySelector(".doc-tree");
+  const sidebarEl = document.querySelector("aside");
   const state = {
     tree: [], // 문서 트리 데이터
     selectedId: null, // 현재 선택 문서 id
@@ -33,7 +39,7 @@ export function createSidebar({ onSelect }) {
 
   // 이벤트 해제 및 정리
   function destroy() {
-    mountElement.removeEventListener("click", handleClick);
+    sidebarEl.removeEventListener("click", handleClick);
     mountElement.innerHTML = "";
   } // 메모리 누수나 중복 이벤트 문제를 방지
 
@@ -46,8 +52,7 @@ export function createSidebar({ onSelect }) {
       return nodes
         .map((node) => {
           const id = Number(node.id);
-          const rawTitle = (node.title ?? "").toString();
-          const title = rawTitle.trim() || "New page";
+          const title = node.title || "제목 없음";
           const children = node.documents || [];
 
           return `
@@ -114,6 +119,21 @@ export function createSidebar({ onSelect }) {
     if (Number.isNaN(id)) return;
 
     try {
+      // 루트 문서 추가
+      if (action === ACTION.ADD_ROOT) {
+        try {
+          const created = await createDocument({
+            title: "New page",
+            parent: null,
+          });
+          await load(created.id);
+          onSelect && onSelect(created.id);
+        } catch (err) {
+          console.error(err);
+        }
+        return;
+      }
+
       // 선택: 표시만 바꾸고, 외부(onSelect)에 "선택됨" 알림
       if (action === ACTION.SELECT) {
         state.selectedId = id;
@@ -125,7 +145,7 @@ export function createSidebar({ onSelect }) {
       // 하위 문서 추가: 내부에서 트리 갱신 + 선택 표시, 외부에 알림
       if (action === ACTION.ADD_CHILD) {
         const created = await createDocument({
-          title: "New page",
+          title: "제목 없음",
           parent: id,
         });
         await load(created.id); // 새 문서를 선택 상태로 갱신
@@ -155,7 +175,7 @@ export function createSidebar({ onSelect }) {
   }
 
   // 초기 이벤트 바인딩
-  mountElement.addEventListener("click", handleClick);
+  sidebarEl.addEventListener("click", handleClick);
 
   // 외부에 공개
   return { load, setSelected, destroy };
