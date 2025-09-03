@@ -15,6 +15,11 @@ main {
   flex-grow: 1;
 }
 
+#head {
+  font-size: 20px;
+  font-weight: 500;
+}
+
 .EditorContainer {
   margin: 0px;
   width: 100%;
@@ -22,4 +27,9 @@ main {
   padding: 30px;
   background-color: #ffffff;
   border: 1px solid #ccc;
+}
+
+.doc-row.selected {
+  background-color: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
 }
