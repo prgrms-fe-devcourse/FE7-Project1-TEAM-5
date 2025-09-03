@@ -38,51 +38,53 @@ export function createSidebar({ onSelect }) {
   } // 메모리 누수나 중복 이벤트 문제를 방지
 
   /* 내부 헬퍼들 */
-  // 트리 렌더링
+  // 트리 렌더링 (재귀 렌더링)
   function render() {
-    mountElement.innerHTML = renderNodes(state.tree);
-  }
+    const build = (nodes) => {
+      if (!Array.isArray(nodes) || nodes.length === 0) return ""; // 재귀 종결
 
-  // 트리 노드 재귀 렌더링
-  function renderNodes(nodes) {
-    if (!Array.isArray(nodes) || nodes.length === 0) return "";
+      return nodes
+        .map((node) => {
+          const id = Number(node.id);
+          const title = node.title || "제목 없음";
+          const children = node.documents || [];
 
-    return nodes
-      .map((node) => {
-        const id = Number(node.id);
-        const title = node.title || "제목 없음";
-        const children = node.documents || [];
-
-        return `
-          <div class="doc-node" data-id="${id}">
-            <div class="doc-row" data-action="${ACTION.SELECT}" data-id="${id}">
-              ${title}
-              <div class="doc-actions-container">
-                <button
-                  class="doc-actions"
-                  data-action="${ACTION.DELETE}"
-                  data-id="${id}"
-                  title="삭제"
-                  aria-label="문서 삭제"
-                >-</button>
-                <button
-                  class="doc-actions"
-                  data-action="${ACTION.ADD_CHILD}"
-                  data-id="${id}"
-                  title="하위 문서 추가"
-                  aria-label="하위 문서 추가"
-                >＋</button>
-               </div>
+          return `
+            <div class="doc-node" data-id="${id}">
+              <div class="doc-row" data-action="${
+                ACTION.SELECT
+              }" data-id="${id}">
+                ${title}
+                <div class="doc-actions-container">
+                  <button
+                    class="doc-actions"
+                    data-action="${ACTION.DELETE}"
+                    data-id="${id}"
+                    title="삭제"
+                    aria-label="문서 삭제"
+                  >-</button>
+                  <button
+                    class="doc-actions"
+                    data-action="${ACTION.ADD_CHILD}"
+                    data-id="${id}"
+                    title="하위 문서 추가"
+                    aria-label="하위 문서 추가"
+                  >＋</button>
+                </div>
+              </div>
+              ${
+                children.length
+                  ? `<div class="doc-children">${build(children)}</div>`
+                  : ""
+              }
             </div>
-            ${
-              children.length
-                ? `<div class="doc-children">${renderNodes(children)}</div>`
-                : ""
-            }
-          </div>
-        `;
-      })
-      .join("");
+          `;
+        })
+        .join("");
+    };
+
+    // 한 번의 DOM 갱신으로 전체 트리를 교체
+    mountElement.innerHTML = build(state.tree);
   }
 
   // 선택 문서 강조 표시 동기화
