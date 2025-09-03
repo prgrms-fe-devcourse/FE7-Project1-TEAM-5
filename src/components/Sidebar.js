@@ -1,11 +1,11 @@
-import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
+import { listDocuments, createDocument, deleteDocument } from '../api/api.js';
 
-const ACTION = { SELECT: "select", ADD_CHILD: "add-child", DELETE: "delete" };
+const ACTION = { SELECT: 'select', ADD_CHILD: 'add-child', DELETE: 'delete' };
 
 // 사이드바를 만들어 주는 함수
 export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
-  const mountElement = document.querySelector(".doc-tree");
+  const mountElement = document.querySelector('.doc-tree');
   const state = {
     tree: [], // 문서 트리 데이터
     selectedId: null, // 현재 선택 문서 id
@@ -33,28 +33,28 @@ export function createSidebar({ onSelect }) {
 
   // 이벤트 해제 및 정리
   function destroy() {
-    mountElement.removeEventListener("click", handleClick);
-    mountElement.innerHTML = "";
+    mountElement.removeEventListener('click', handleClick);
+    mountElement.innerHTML = '';
   } // 메모리 누수나 중복 이벤트 문제를 방지
 
   /* 내부 헬퍼들 */
   // 트리 렌더링
   function render() {
-    mountElement.innerHTML = "";
-    const treeRoot = document.createElement("div");
-    treeRoot.className = "doc-tree";
+    mountElement.innerHTML = '';
+    const treeRoot = document.createElement('div');
+    treeRoot.className = 'doc-tree';
     treeRoot.innerHTML = renderNodes(state.tree);
     mountElement.appendChild(treeRoot);
   }
 
   // 트리 노드 재귀 렌더링
   function renderNodes(nodes) {
-    if (!Array.isArray(nodes) || nodes.length === 0) return "";
+    if (!Array.isArray(nodes) || nodes.length === 0) return '';
 
     return nodes
       .map((node) => {
         const id = Number(node.id);
-        const title = node.title || "제목 없음";
+        const title = node.title || '제목 없음';
         const children = node.documents || [];
 
         return `
@@ -81,18 +81,18 @@ export function createSidebar({ onSelect }) {
             ${
               children.length
                 ? `<div class="doc-children">${renderNodes(children)}</div>`
-                : ""
+                : ''
             }
           </div>
         `;
       })
-      .join("");
+      .join('');
   }
 
   // 선택 문서 강조 표시 동기화
   function syncSelectedHighlight() {
-    mountElement.querySelectorAll(".doc-row.selected").forEach((row) => {
-      row.classList.remove("selected");
+    mountElement.querySelectorAll('.doc-row.selected').forEach((row) => {
+      row.classList.remove('selected');
     });
 
     if (state.selectedId == null) return;
@@ -100,14 +100,14 @@ export function createSidebar({ onSelect }) {
     const node = mountElement.querySelector(
       `.doc-node[data-id="${state.selectedId}"]`
     );
-    const row = node ? node.querySelector(".doc-row") : null;
+    const row = node ? node.querySelector('.doc-row') : null;
 
-    if (row) row.classList.add("selected");
+    if (row) row.classList.add('selected');
   }
 
   // 클릭 이벤트 핸들러 (이벤트 위임)
   async function handleClick(e) {
-    const el = e.target.closest("[data-action]");
+    const el = e.target.closest('[data-action]');
     if (!el) return;
 
     const action = el.dataset.action;
@@ -115,7 +115,7 @@ export function createSidebar({ onSelect }) {
     if (Number.isNaN(id)) return;
 
     try {
-      // 선택: 표시만 바꾸고, 외부(onSelect)에 “선택됨” 알림
+      // 선택: 표시만 바꾸고, 외부(onSelect)에 "선택됨" 알림
       if (action === ACTION.SELECT) {
         state.selectedId = id;
         syncSelectedHighlight();
@@ -126,7 +126,7 @@ export function createSidebar({ onSelect }) {
       // 하위 문서 추가: 내부에서 트리 갱신 + 선택 표시, 외부에 알림
       if (action === ACTION.ADD_CHILD) {
         const created = await createDocument({
-          title: "제목 없음",
+          title: '제목 없음',
           parent: id,
         });
         await load(created.id); // 새 문서를 선택 상태로 갱신
@@ -136,7 +136,7 @@ export function createSidebar({ onSelect }) {
 
       // 삭제: 내부에서 트리 갱신, 선택 문서였으면 외부에 null 알림
       if (action === ACTION.DELETE) {
-        const ok = confirm("삭제할까요? 하위 문서도 함께 삭제됩니다.");
+        const ok = confirm('삭제할까요? 하위 문서도 함께 삭제됩니다.');
         if (!ok) return;
 
         const wasSelected = state.selectedId === id;
@@ -155,7 +155,7 @@ export function createSidebar({ onSelect }) {
   }
 
   // 초기 이벤트 바인딩
-  mountElement.addEventListener("click", handleClick);
+  mountElement.addEventListener('click', handleClick);
 
   // 외부에 공개
   return { load, setSelected, destroy };
