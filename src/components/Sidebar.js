@@ -37,12 +37,6 @@ export function createSidebar({ onSelect }) {
     syncSelectedHighlight();
   }
 
-  // 이벤트 해제 및 정리
-  function destroy() {
-    sidebarEl.removeEventListener("click", handleClick);
-    mountElement.innerHTML = "";
-  } // 메모리 누수나 중복 이벤트 문제를 방지
-
   /* 내부 헬퍼들 */
   // 트리 렌더링 (재귀 렌더링)
   function render() {
@@ -172,9 +166,41 @@ export function createSidebar({ onSelect }) {
     }
   }
 
+  // 문서 제목 갱신 (외부에서 제목 바뀌었을 때 호출)
+  function updateTitle(id, newTitle) {
+    const findAndUpdate = (nodes) => {
+      for (const node of nodes) {
+        if (Number(node.id) === Number(id)) {
+          // id 비교
+          node.title = newTitle;
+          return true;
+        }
+        // 자식 요소가 있으면 자식요소로 재귀함수 호출
+        if (node.documents && findAndUpdate(node.documents)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    if (findAndUpdate(state.tree)) {
+      //재귀함수 호출 후 id가 존재하면 렌더링
+      render();
+    }
+  }
+
+  // 문서 제목 변경 이벤트 핸들러
+  function onTitleUpdated(e) {
+    const { id, title } = e.detail;
+    updateTitle(id, title);
+  }
+
+  // 문서 제목 변경 이벤트 바인딩
+  window.addEventListener("documentTitleUpdated", onTitleUpdated);
+
   // 초기 이벤트 바인딩
   sidebarEl.addEventListener("click", handleClick);
 
   // 외부에 공개
-  return { load, setSelected, destroy };
+  return { load, setSelected };
 }

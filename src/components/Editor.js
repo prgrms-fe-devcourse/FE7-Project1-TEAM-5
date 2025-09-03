@@ -1,6 +1,6 @@
 import { getDocument, updateDocument } from "../api/api.js";
 
-const DEBOUNCE_MS = 1500;
+const DEBOUNCE_MS = 1000;
 
 let currentId = null; // 현재 편집 중 문서 ID
 let isEdit = false; // 사용자 입력 발생 여부
@@ -48,13 +48,19 @@ async function saveNow() {
   if (saving) return;
 
   saving = true;
+  const title = titleEl.value.trim() || "New page";
   const payload = {
-    title: titleEl.value,
+    title: title,
     content: contentEl.value,
   }; //.
 
   try {
     await updateDocument(currentId, payload); // PUT /documents/:id
+    window.dispatchEvent(
+      new CustomEvent("documentTitleUpdated", {
+        detail: { id: currentId, title: title },
+      })
+    );
     isEdit = false; // 저장 성공 시 편집 유무 다운
   } catch (err) {
     console.error("[editor] 자동저장 실패:", err);
