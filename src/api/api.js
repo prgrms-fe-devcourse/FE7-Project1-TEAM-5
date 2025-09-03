@@ -1,16 +1,16 @@
-const BASE_URL = "https://kdt-api.fe.dev-cos.com";
-const USERNAME = "crabBurger";
+const BASE_URL = 'https://kdt-api.fe.dev-cos.com';
+const USERNAME = 'crabBurger';
 const DEFAULT_TIMEOUT = 10000; // 10초 타임아웃
 
 // buildHeader: 모든 요청에 기본으로 들어가는 헤더(x-username)를 생성하는 함수
 // POST, PUT처럼 body가 필요할 경우 자동으로 "Content-Type": "application/json" 추가
 function buildHeaders(extra = {}, hasBody = false) {
   const header = {
-    "x-username": USERNAME,
+    'x-username': USERNAME,
     ...extra,
   };
-  if (hasBody && !("Content-Type" in header)) {
-    header["Content-Type"] = "application/json";
+  if (hasBody && !('Content-Type' in header)) {
+    header['Content-Type'] = 'application/json';
   }
   return header;
 }
@@ -23,15 +23,15 @@ function buildHeaders(extra = {}, hasBody = false) {
 //   timeout: 요청 타임아웃 (기본값: DEFAULT_TIMEOUT) (선택사항)
 export async function request(
   path,
-  { method = "GET", headers = {}, body = null, timeout = DEFAULT_TIMEOUT } = {}
+  { method = 'GET', headers = {}, body = null, timeout = DEFAULT_TIMEOUT } = {}
 ) {
   // URL 생성 (BASE_URL + path)
-  const url = `${BASE_URL}${path.startsWith("/") ? path : "/" + path}`;
+  const url = `${BASE_URL}${path.startsWith('/') ? path : '/' + path}`;
 
   // 타임아웃 설정을 위한 AbortController 사용
   const controller = new AbortController();
   const timer = setTimeout(
-    () => controller.abort(new Error("Request timed out")),
+    () => controller.abort(new Error('Request timed out')),
     timeout
   );
 
@@ -43,15 +43,15 @@ export async function request(
       headers: buildHeaders(headers, body != null),
       body:
         body != null
-          ? typeof body === "string"
+          ? typeof body === 'string'
             ? body
             : JSON.stringify(body)
           : undefined,
       signal: controller.signal,
     });
 
-    const contentType = res.headers.get("content-type") || "";
-    const isJSON = contentType.includes("application/json");
+    const contentType = res.headers.get('content-type') || '';
+    const isJSON = contentType.includes('application/json');
     const data = isJSON ? await res.json() : await res.text();
 
     // HTTP 상태 코드가 200-299 범위가 아니면 에러 처리
@@ -74,34 +74,34 @@ export async function request(
 
 // 문서 목록 조회
 export function listDocuments() {
-  return request("/documents");
+  return request('/documents');
 }
 
 // 단일 문서 조회
 export function getDocument(id) {
-  if (!id) throw new Error("getDocument requires an id");
+  if (!id) throw new Error('getDocument requires an id');
   return request(`/documents/${id}`);
 }
 
 // 문서 생성
 export function createDocument({ title, parent = null }) {
-  return request("/documents", {
-    method: "POST",
+  return request('/documents', {
+    method: 'POST',
     body: { title, parent },
   });
 }
 
 // 문서 수정
 export function updateDocument(id, payload) {
-  if (!id) throw new Error("updateDocument requires an id");
+  if (!id) throw new Error('updateDocument requires an id');
   return request(`/documents/${id}`, {
-    method: "PUT",
+    method: 'PUT',
     body: payload,
   });
 }
 
 // 문서 삭제
 export function deleteDocument(id) {
-  if (!id) throw new Error("deleteDocument requires an id");
-  return request(`/documents/${id}`, { method: "DELETE" });
+  if (!id) throw new Error('deleteDocument requires an id');
+  return request(`/documents/${id}`, { method: 'DELETE' });
 }
