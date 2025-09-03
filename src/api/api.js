@@ -21,6 +21,7 @@ export async function request(
   path,
   { method = "GET", body = null, timeout = TIMEOUT } = {}
 ) {
+  const hasBody = body != null && method !== "GET" && method !== "HEAD"; // GET과 DELETE는 body가 없으므로 이를 판단해주어야 함
   const controller = new AbortController();
   const timer = setTimeout(
     () => controller.abort(new Error("timeout")),
@@ -31,7 +32,7 @@ export async function request(
     const res = await fetch(url(path), {
       method,
       headers: headers(),
-      body: JSON.stringify(body),
+      body: hasBody ? JSON.stringify(body) : undefined,
       signal: controller.signal,
     });
 
