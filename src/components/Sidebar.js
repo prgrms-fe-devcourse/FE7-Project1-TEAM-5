@@ -7,8 +7,9 @@ const ACTION = { SELECT: "select", ADD_CHILD: "add-child", DELETE: "delete" };
  * @param {HTMLElement} mountElement  트리를 렌더링할 루트(예: <aside> 안의 <ul>)
  * @param {(id:number|null)=>void} onSelect 문서 선택 시 호출(에디터 로딩용)
  */
-export function createSidebar({ mountElement, onSelect }) {
+export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
+  const mountElement = document.querySelector(".doc-tree");
   const state = {
     tree: [], // 문서 트리 데이터
     selectedId: null, // 현재 선택 문서 id
@@ -64,21 +65,23 @@ export function createSidebar({ mountElement, onSelect }) {
           <div class="doc-node" data-id="${id}">
             <div class="doc-row" data-action="${ACTION.SELECT}" data-id="${id}">
               ${title}
-              <button
-                class="doc-actions"
-                data-action="${ACTION.DELETE}"
-                data-id="${id}"
-                title="삭제"
-                aria-label="문서 삭제"
-              >-</button>
-              <button
-                class="doc-actions"
-                data-action="${ACTION.ADD_CHILD}"
-                data-id="${id}"
-                title="하위 문서 추가"
-                aria-label="하위 문서 추가"
-              >＋</button>
-            </div>
+              <div class="doc-actions-container">
+                <button
+                  class="doc-actions"
+                  data-action="${ACTION.DELETE}"
+                  data-id="${id}"
+                  title="삭제"
+                  aria-label="문서 삭제"
+                >-</button>
+                <button
+                  class="doc-actions"
+                  data-action="${ACTION.ADD_CHILD}"
+                  data-id="${id}"
+                  title="하위 문서 추가"
+                  aria-label="하위 문서 추가"
+                >＋</button>
+               </div>
+            </div>햐
             ${
               children.length
                 ? `<div class="doc-children">${renderNodes(children)}</div>`
@@ -106,7 +109,7 @@ export function createSidebar({ mountElement, onSelect }) {
     if (row) row.classList.add("selected");
   }
 
-  // 클릭 이벤트 핸들러
+  // 클릭 이벤트 핸들러 (이벤트 위임)
   async function handleClick(e) {
     const el = e.target.closest("[data-action]");
     if (!el) return;
@@ -116,34 +119,37 @@ export function createSidebar({ mountElement, onSelect }) {
     if (Number.isNaN(id)) return;
 
     try {
+      // 선택: 표시만 바꾸고, 외부(onSelect)에 “선택됨” 알림
       if (action === ACTION.SELECT) {
         state.selectedId = id;
         syncSelectedHighlight();
-        history.pushState({}, "", `/documents/${id}`);
-        onSelect(id);
+        onSelect && onSelect(id); // 라우팅/에디터는 외부에서
         return;
       }
 
+      // 하위 문서 추가: 내부에서 트리 갱신 + 선택 표시, 외부에 알림
       if (action === ACTION.ADD_CHILD) {
         const created = await createDocument({
           title: "제목 없음",
           parent: id,
         });
-        await load(created.id);
-        history.pushState({}, "", `/documents/${created.id}`);
-        onSelect(created.id);
+        await load(created.id); // 새 문서를 선택 상태로 갱신
+        onSelect && onSelect(created.id); // 라우팅/에디터는 외부
         return;
       }
 
+      // 삭제: 내부에서 트리 갱신, 선택 문서였으면 외부에 null 알림
       if (action === ACTION.DELETE) {
         const ok = confirm("삭제할까요? 하위 문서도 함께 삭제됩니다.");
         if (!ok) return;
-        await deleteDocument(id);
+
         const wasSelected = state.selectedId === id;
-        await load();
+        await deleteDocument(id);
+        await load(undefined); // 선택 유지한 채 트리만 갱신
+
         if (wasSelected) {
-          history.pushState({}, "", `/`);
-          onSelect(null);
+          // 현재 보고 있던 걸 지웠다면 외부에 선택 해제 신호
+          onSelect && onSelect(null);
         }
         return;
       }
