@@ -1,87 +1,40 @@
 <!DOCTYPE html>
 <html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team5</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team5</title>
+    <link rel="stylesheet" href="./src/styles/global.css" />
+  </head>
 
-  <link rel="stylesheet" href="./src/styles/global.css" />
-</head>
-
-<body>
-  <aside>
-    <div id="head">
-      너드호소인들의 Notion
-      <button>✎</button>
-    </div>
-    <div class="SearchContainer">
-      <input type="text" placeholder="검색하세요" /><button>⌕</button>
-    </div>
-    <div>
-      <span>개인 페이지</span><button>+</button>
-    </div>
-    <!--
-•.doc-tree: 트리 전체를 감싸는 최상위 컨테이너 (한 페이지에 1개)
-•.doc-node: 문서 1개 = 노드 1개. 트리의 모든 문서는 무조건 .doc-node가 됨 (모든 레벨 동일)
-•.doc-row: 해당 문서 노드의 한 줄짜리 표시부(클릭/하이라이트 영역). 각 .doc-node 안에 정확히 1개
-•.doc-actions: 그 문서의 행 우측 버튼 묶음(-, +)
-•.doc-children: 그 문서의 하위 문서들을 담는 컨테이너. 자식이 있을 때만 나타남. 안에는 다시 **여러 개의 .doc-node**가 중첩
--->
-
-    <div class="doc-tree">
-      <!-- 1단계 루트 문서 -->
-      <div class="doc-node" data-id="1">
-        <div class="doc-row">
-          루트 A
-          <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
-          <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
-        </div>
-
-        <!-- 자식이 있으면 doc-children -->
-        <div class="doc-children">
-          <!-- 2단계 하위 문서 -->
-          <div class="doc-node" data-id="2">
-            <div class="doc-row">
-              A-1
-              <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
-              <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
-            </div>
-
-            <!-- 또 자식이 있으면 다시 doc-children -->
-            <div class="doc-children">
-              <!-- 3단계 하위 문서 -->
-              <div class="doc-node" data-id="5">
-                <div class="doc-row">
-                  A-1-1
-                  <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
-                  <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
-                </div>
-                <!-- 여기는 자식이 없으니 doc-children 없음 -->
-              </div>
-            </div>
-          </div>
-        </div>
+  <body>
+    <aside>
+      <div>
+        <h3>너드호소인들의 Notion</h3>
       </div>
-
-      <!-- 또 다른 루트 문서 -->
-      <div class="doc-node" data-id="3">
-        <div class="doc-row">
-          루트 B
-          <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
-          <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
-        </div>
+      <div class="SearchContainer">
+        <input type="text" placeholder="검색기능" /><button>⌕</button>
       </div>
-    </div>
-  </aside>
-  <main>
-    <input id="title" type="text" placeholder="New page" />
+      <div>
+        <span>개인 페이지</span>
+        <button>+</button>
+      </div>
+      <ul>
+        루트문서
+        <li>하위문서</li>
+      </ul>
+    </aside>
+    <main>
+      <input class="Title" type="text" placeholder="New page" />
 
-    <textarea id="content" class="EditorContainer" placeholder="여기에 내용을 작성하세요"></textarea>
-  </main>
-  <script type="module" src="./src/index.js"></script>
-  <script type="module" src="./src/router.js"></script>
-</body>
-
+      <textarea
+        class="EditorContainer"
+        placeholder="여기에 내용을 작성하세요"
+      ></textarea>
+    </main>
+    <script type="module" src="./src/index.js"></script>
+    <script type="module" src="./src/router.js"></script>
+  </body>
 </html>
