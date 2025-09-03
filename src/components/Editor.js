@@ -1,7 +1,4 @@
-import {
-  getDocument as apiGetDocument,
-  updateDocument as apiUpdateDocument,
-} from "../api/api.js";
+import { getDocument, updateDocument } from "../api/api.js";
 
 const DEBOUNCE_MS = 1500;
 
@@ -31,7 +28,7 @@ export async function openDocument(id) {
   }
 
   try {
-    const doc = await apiGetDocument(currentId);
+    const doc = await getDocument(currentId);
     const docTitle = doc.title;
     const docContent = doc.content;
 
@@ -57,7 +54,7 @@ async function saveNow() {
   };
 
   try {
-    await apiUpdateDocument(currentId, payload); // PUT /documents/:id
+    await updateDocument(currentId, payload); // PUT /documents/:id
     isEdit = false; // 저장 성공 시 편집 유무 다운
   } catch (err) {
     console.error("[editor] 자동저장 실패:", err);
