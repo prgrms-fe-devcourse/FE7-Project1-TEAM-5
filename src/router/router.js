@@ -1,4 +1,4 @@
-import { renderEditorContent } from './editor.js';
+import { openDocument } from './editor.js';
 
 export const handleRoute = async () => {
   // 현재 URL 경로를 가져오는 코드
@@ -10,11 +10,11 @@ export const handleRoute = async () => {
     const documentId = parts[parts.length - 1]; // 배열 마지막이 아이디 요소.  이 ID를 사용하여 문서 내용을 부르고 편집기를 렌더링.
 
     // ID를 받아서 editor.js의 함수를 호출.
-    await renderEditorContent(documentId);
+    await openDocument(documentId);
   } else {
     // 루트문서일 경우.
 
-    await renderEditorContent(null);
+    await openDocument(null);
   }
 };
 
