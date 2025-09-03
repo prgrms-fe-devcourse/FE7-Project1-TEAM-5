@@ -2,13 +2,27 @@
 body {
   display: flex;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
   height: 100vh;
   background-color: #fffffffd;
   /* 전체 배경색 - 노션의 연한 회색 */
   color: #37352f;
   /* 기본 텍스트 색상 */
   line-height: 1.5;
+}
+
+/* 게 햄버거 아이콘 크기 조절*/
+.Icon {
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 /* 사이드바 (aside) 스타일 */
@@ -34,7 +48,7 @@ aside {
 }
 
 /* 사이드바 헤더 (너드호소인들의 Notion) */
-aside>div:first-child h3 {
+aside > div:first-child h3 {
   font-size: 16px;
   font-weight: 500;
   color: #4a4a4a;
@@ -77,9 +91,8 @@ aside>div:first-child h3 {
   background-color: #e0e0e0;
 }
 
-
 /* 개인 페이지 버튼 */
-aside>div:nth-child(3) {
+aside > div:nth-child(3) {
   /* "개인 페이지"와 "+" 버튼을 감싸는 div */
   display: flex;
   justify-content: space-between;
@@ -90,16 +103,16 @@ aside>div:nth-child(3) {
   transition: background-color 0.2s ease;
 }
 
-aside>div:nth-child(3):hover {
+aside > div:nth-child(3):hover {
   background-color: #f1f1f1;
 }
 
-aside>div:nth-child(3) span {
+aside > div:nth-child(3) span {
   font-size: 14px;
   color: #37352f;
 }
 
-aside>div:nth-child(3) button {
+aside > div:nth-child(3) button {
   background: none;
   border: none;
   color: #888;
@@ -110,7 +123,7 @@ aside>div:nth-child(3) button {
   transition: background-color 0.2s;
 }
 
-aside>div:nth-child(3) button:hover {
+aside > div:nth-child(3) button:hover {
   background-color: #e0e0e0;
 }
 
@@ -204,7 +217,6 @@ aside>div:nth-child(3) button:hover {
   /* 호버 시 클릭 가능 */
 }
 
-
 /* 메인 편집기 영역 */
 main {
   flex-grow: 1;
@@ -235,7 +247,6 @@ input.Title::placeholder {
   color: #ccc;
   /* 플레이스홀더 색상 */
 }
-
 
 /* 편집기 내용 입력창 (textarea.EditorContainer) */
 textarea.EditorContainer {
