@@ -1,35 +1,260 @@
+/* 기본 스타일 초기화 및 폰트 설정 */
 body {
   display: flex;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   height: 100vh;
+  background-color: #fffffffd;
+  /* 전체 배경색 - 노션의 연한 회색 */
+  color: #37352f;
+  /* 기본 텍스트 색상 */
+  line-height: 1.5;
 }
 
+/* 사이드바 (aside) 스타일 */
 aside {
-  width: 250px;
-  padding: 20px;
+  width: 280px;
+  /* 너비 약간 증가 */
+  background-color: #d1d3da60;
+  /* 흰색 배경 */
+  padding: 10px;
+  /* 내부 여백 */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  /* 경계선 대신 부드러운 그림자 */
   display: flex;
   flex-direction: column;
-  border: 1px solid #ccc;
+  gap: 5px;
+  /* 요소 간 간격 */
+  border-right: 1px solid #e0e0e0;
+  /* 연한 오른쪽 경계선 */
+  box-sizing: border-box;
+  /* 패딩이 너비에 포함되도록 */
+  overflow-y: auto;
+  /* 내용이 길어지면 스크롤 */
 }
 
+/* 사이드바 헤더 (너드호소인들의 Notion) */
+aside>div:first-child h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #4a4a4a;
+  padding: 10px;
+  margin: 0;
+}
+
+/* 검색 컨테이너 */
+.SearchContainer {
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.SearchContainer input[type="text"] {
+  flex-grow: 1;
+  border: none;
+  background-color: #f1f1f1;
+  /* 연한 배경 */
+  padding: 8px 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #37352f;
+}
+
+.SearchContainer button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+  padding: 5px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.SearchContainer button:hover {
+  background-color: #e0e0e0;
+}
+
+
+/* 개인 페이지 버튼 */
+aside>div:nth-child(3) {
+  /* "개인 페이지"와 "+" 버튼을 감싸는 div */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+aside>div:nth-child(3):hover {
+  background-color: #f1f1f1;
+}
+
+aside>div:nth-child(3) span {
+  font-size: 14px;
+  color: #37352f;
+}
+
+aside>div:nth-child(3) button {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+aside>div:nth-child(3) button:hover {
+  background-color: #e0e0e0;
+}
+
+/* 문서 트리 (.doc-tree) */
+.doc-tree {
+  list-style: none;
+  /* 리스트 점 제거 */
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  /* 남은 공간 차지 */
+  padding-top: 5px;
+  /* 상단 여백 */
+}
+
+/* 각 문서 노드 (.doc-node) */
+.doc-node {
+  margin-left: 10px;
+  /* 하위 문서 들여쓰기 */
+}
+
+/* 문서 행 (.doc-row) - 클릭 가능한 영역 */
+.doc-row {
+  display: flex;
+  justify-content: space-between;
+  /* 양 끝 정렬 */
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  color: #37352f;
+  position: relative;
+  /* 버튼 컨테이너를 숨기고 호버 시 표시 */
+  white-space: nowrap;
+  /* 텍스트가 줄바꿈되지 않도록 */
+}
+
+.doc-row:hover {
+  background-color: #e0e0e0;
+}
+
+/* 선택된 문서 행 스타일 */
+.doc-row.selected {
+  background-color: rgba(59, 130, 246, 0.1);
+  /* 연한 파란색 배경 */
+  font-weight: bold;
+  color: #3b82f6;
+  /* 파란색 텍스트 */
+}
+
+/* 문서 액션 버튼들 (.doc-actions) */
+.doc-actions {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.doc-row:hover .doc-actions {
+  opacity: 1;
+  /* 호버 시 버튼 표시 */
+  pointer-events: auto;
+  /* 호버 시 클릭 가능 */
+}
+
+.doc-actions:hover {
+  background-color: #d3d3d3;
+}
+
+.doc-actions-container {
+  display: flex;
+  gap: 5px;
+  /* 버튼들 사이의 간격 */
+  transition: opacity 0.2s;
+  opacity: 0;
+  /* 기본적으로 숨김 */
+  pointer-events: none;
+  /* 숨겨진 상태에서 클릭 방지 */
+}
+
+/* 문서 행에 호버 시 액션 버튼 표시 */
+.doc-row:hover .doc-actions-container {
+  opacity: 1;
+  pointer-events: auto;
+  /* 호버 시 클릭 가능 */
+}
+
+
+/* 메인 편집기 영역 */
 main {
   flex-grow: 1;
+  padding: 50px 70px;
+  /* 좌우 여백을 노션처럼 넓게 */
+  overflow-y: auto;
+  /* 내용이 길어지면 스크롤 */
 }
 
-#head {
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.EditorContainer {
-  margin: 0px;
+/* 문서 제목 입력창 (input.Title) */
+input.Title {
   width: 100%;
-  height: 100%;
-  padding: 30px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  font-size: 36px;
+  /* 노션처럼 큰 제목 폰트 */
+  font-weight: 700;
+  border: none;
+  outline: none;
+  /* 포커스 시 테두리 제거 */
+  padding: 10px 0;
+  margin-bottom: 20px;
+  /* 제목과 내용 간 간격 */
+  color: #333;
+  background-color: transparent;
+  /* 배경 투명 */
 }
 
-.doc-row.selected {
-  background-color: rgba(0, 0, 0, 0.1);
-  font-weight: bold;
+input.Title::placeholder {
+  color: #ccc;
+  /* 플레이스홀더 색상 */
+}
+
+
+/* 편집기 내용 입력창 (textarea.EditorContainer) */
+textarea.EditorContainer {
+  margin: 0;
+  width: 100%;
+  height: calc(100% - 120px);
+  /* 제목 높이 고려하여 조정 */
+  padding: 10px 0;
+  background-color: #ffffff;
+  /* 흰색 배경 */
+  border: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #37352f;
+  resize: none;
+  /* 사용자가 크기를 조절하지 못하게 함 */
+}
+
+textarea.EditorContainer::placeholder {
+  color: #ccc;
 }
