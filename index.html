@@ -9,22 +9,35 @@
     <link rel="stylesheet" href="./src/styles/global.css" />
   </head>
 
-  <body>
-    <aside>
-      <div>
-        <h3>너드호소인들의 Notion</h3>
+<body>
+  <aside>
+    <div class="sidebar-title">
+      <img src="./assets/Icon.svg" class="Icon"/>
+      <h3>너드호소인들의 Notion</h3>
+    </div>
+    <div class="SearchContainer">
+      <input type="text" placeholder="검색기능" /><button>⌕</button>
+    </div>
+    <div>
+      <span>개인 페이지</span>
+      <button>+</button>
+    </div>
+    <div class="doc-tree">
+      <!-- 1단계 루트 문서 -->
+      <div class="doc-node" data-id="1">
+        <div class="doc-row">
+          루트 A
+          <div class="doc-actions-container">
+            <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
+            <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
+          </div>
+        </div>
+        <div class="doc-children">
+        </div>
       </div>
-      <div class="SearchContainer">
-        <input type="text" placeholder="검색기능" /><button>⌕</button>
-      </div>
-      <div>
-        <span>개인 페이지</span>
-        <button>+</button>
-      </div>
-      <div class="doc-tree"></div>
-    </aside>
-    <main>
-      <input class="Title" type="text" placeholder="New page" />
+  </aside>
+  <main>
+    <input class="Title" type="text" placeholder="New page" />
 
       <textarea
         class="EditorContainer"

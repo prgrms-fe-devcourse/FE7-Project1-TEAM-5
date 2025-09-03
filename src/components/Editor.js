@@ -51,7 +51,7 @@ async function saveNow() {
   const payload = {
     title: titleEl.value,
     content: contentEl.value,
-  };
+  }; //.
 
   try {
     await updateDocument(currentId, payload); // PUT /documents/:id
