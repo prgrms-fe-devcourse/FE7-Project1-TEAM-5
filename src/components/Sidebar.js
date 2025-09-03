@@ -2,11 +2,7 @@ import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
 
 const ACTION = { SELECT: "select", ADD_CHILD: "add-child", DELETE: "delete" };
 
-/**
- * 사이드바를 만들어 주는 함수
- * @param {HTMLElement} mountElement  트리를 렌더링할 루트(예: <aside> 안의 <ul>)
- * @param {(id:number|null)=>void} onSelect 문서 선택 시 호출(에디터 로딩용)
- */
+// 사이드바를 만들어 주는 함수
 export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
   const mountElement = document.querySelector(".doc-tree");
