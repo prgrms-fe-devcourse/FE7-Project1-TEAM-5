@@ -113,26 +113,24 @@ export function createSidebar({ onSelect }) {
   async function handleClick(e) {
     const el = e.target.closest("[data-action]");
     if (!el) return;
-
     const action = el.dataset.action;
+
     const id = Number(el.dataset.id);
-    if (Number.isNaN(id)) return;
 
     try {
       // 루트 문서 추가
       if (action === ACTION.ADD_ROOT) {
-        try {
-          const created = await createDocument({
-            title: "New page",
-            parent: null,
-          });
-          await load(created.id);
-          onSelect && onSelect(created.id);
-        } catch (err) {
-          console.error(err);
-        }
+        const created = await createDocument({
+          title: "New page",
+          parent: null,
+        });
+        await load(created.id);
+        onSelect && onSelect(created.id);
+
         return;
       }
+
+      if (Number.isNaN(id)) return;
 
       // 선택: 표시만 바꾸고, 외부(onSelect)에 "선택됨" 알림
       if (action === ACTION.SELECT) {
