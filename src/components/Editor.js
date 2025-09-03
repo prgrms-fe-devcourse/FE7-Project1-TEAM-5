@@ -1,54 +1,79 @@
-import {} from "../api/api.js";
+import {
+  getDocument as apiGetDocument,
+  updateDocument as apiUpdateDocument,
+} from "../api/api.js";
 
-async function runExamples() {
+const DEBOUNCE_MS = 1500;
+
+let currentId = null; // 현재 편집 중 문서 ID
+let isEdit = false; // 사용자 입력 발생 여부
+let saving = false; // 저장 중에 쓰는 것
+let saveTimer = null; // 디바운스 타이머
+
+// DOM
+const titleEl = document.querySelector(".Title");
+const contentEl = document.querySelector(".EditorContainer");
+
+// 에디터 값 세팅
+function setEditor(title, content) {
+  if (titleEl) titleEl.value = title;
+  if (contentEl) contentEl.value = content;
+}
+
+// 라우터에서 호출하면 문서 보여주는 함수
+export async function openDocument(id) {
+  currentId = id || null;
+
+  if (!currentId) {
+    setEditor("", "");
+    isEdit = false;
+    return;
+  }
+
   try {
-    // 1) 문서 목록 조회 (GET /documents)
-    const docs = await listDocuments();
-    console.log("문서 트리:", docs);
+    const doc = await apiGetDocument(currentId);
+    const docTitle = doc.title;
+    const docContent = doc.content;
 
-    // 2) 단일 문서 조회 (GET /documents/:id)
-    const docId = docs[0]?.id; // 첫 번째 문서 ID (예시)
-    // id값을 안다면 여기서부터 작성
-    if (docId) {
-      const doc = await getDocument(docId);
-      console.log("단일 문서:", doc);
-    }
-
-    // 4) 문서 수정 (PUT /documents/:id)
-    const updatedDoc = await updateDocument(newDoc.id, {
-      title: "수정된 문서 제목",
-    });
-    console.log("수정된 문서:", updatedDoc);
+    setEditor(docTitle, docContent);
+    isEdit = false;
   } catch (err) {
-    console.error("API 호출 중 에러:", err);
+    console.error("[editor] 문서 불러오기 실패:", err);
+    setEditor("", "");
+    isEdit = false;
   }
 }
 
-runExamples();
+// 즉시 저장(디바운스 만료/blur에서 호출)
+async function saveNow() {
+  if (!currentId) return;
+  if (!isEdit) return;
+  if (saving) return;
 
-const title = document.querySelector(".Title");
-const content = document.querySelector(".EditorContainer");
+  saving = true;
+  const payload = {
+    title: titleEl.value,
+    content: contentEl.value,
+  };
 
-let currentId = null;
-let dirty = false;
-
-title.addEventListener("keyup", (e) => {
-  let titleEdit = e.target.value;
-});
-content.addEventListener("keyup", (e) => {
-  let contentEdit = e.target.value;
-});
-
-async function openDocument(id) {
-  currentId = id;
   try {
-    const doc = await getDocument(id);
-    title.value = doc.title ?? "";
-    content.value = doc.content ?? "";
-    dirty = false;
-  } catch (e) {
-    console.error("문서 로드 실패:", e);
-    title.value = "";
-    content.value = "";
+    await apiUpdateDocument(currentId, payload); // PUT /documents/:id
+    isEdit = false; // 저장 성공 시 편집 유무 다운
+  } catch (err) {
+    console.error("[editor] 자동저장 실패:", err);
+    // 실패 시 편집 변수(isEdit) 유지 및 재시도
+  } finally {
+    saving = false;
   }
 }
+
+// 디바운스
+function debounce() {
+  isEdit = true;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, DEBOUNCE_MS);
+}
+
+// 이벤트
+titleEl.addEventListener("keyup", debounce);
+contentEl.addEventListener("keyup", debounce);
