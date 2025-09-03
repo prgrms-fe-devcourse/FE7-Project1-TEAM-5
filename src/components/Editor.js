@@ -17,7 +17,7 @@ const contentEl = document.querySelector(".EditorContainer");
 // 에디터 값 세팅
 function setEditor(title, content) {
   if (titleEl) titleEl.value = title;
-  if (contentEl) contentEl.value = content;
+  if (contentEl) contentEl.value = content || "";
 }
 
 // 라우터에서 호출하면 문서 보여주는 함수
