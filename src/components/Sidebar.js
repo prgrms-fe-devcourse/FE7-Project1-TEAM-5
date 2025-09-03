@@ -15,14 +15,11 @@ export function createSidebar({ mountElement, onSelect }) {
   };
 
   /*  외부로 내보낼 API(메서드)들 */
-  // 문서 트리 로딩
+  // 문서 트리 로딩 (초기 또는 갱신용)
   async function load(initialSelectedId = null) {
     try {
       state.tree = await listDocuments();
-      state.selectedId =
-        initialSelectedId != null
-          ? Number(initialSelectedId)
-          : state.selectedId;
+      state.selectedId = Number(initialSelectedId);
 
       render();
       syncSelectedHighlight();
@@ -33,7 +30,7 @@ export function createSidebar({ mountElement, onSelect }) {
 
   // 선택 문서 id 갱신
   function setSelected(id) {
-    state.selectedId = id === null ? null : Number(id);
+    state.selectedId = Number(id);
     syncSelectedHighlight();
   }
 
@@ -53,16 +50,6 @@ export function createSidebar({ mountElement, onSelect }) {
     mountElement.appendChild(treeRoot);
   }
 
-  // HTML 이스케이프 (renderNodes 안에서 사용)
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
   // 트리 노드 재귀 렌더링
   function renderNodes(nodes) {
     if (!Array.isArray(nodes) || nodes.length === 0) return "";
@@ -70,35 +57,35 @@ export function createSidebar({ mountElement, onSelect }) {
     return nodes
       .map((node) => {
         const id = Number(node.id);
-        const title = escapeHtml(node.title || "제목 없음");
+        const title = node.title || "제목 없음";
         const children = node.documents || [];
 
         return `
-        <div class="doc-node" data-id="${id}">
-          <div class="doc-row" data-action="${ACTION.SELECT}" data-id="${id}">
-            ${title}
-            <button
-              class="doc-actions"
-              data-action="${ACTION.DELETE}"
-              data-id="${id}"
-              title="삭제"
-              aria-label="문서 삭제"
-            >-</button>
-            <button
-              class="doc-actions"
-              data-action="${ACTION.ADD_CHILD}"
-              data-id="${id}"
-              title="하위 문서 추가"
-              aria-label="하위 문서 추가"
-            >＋</button>
+          <div class="doc-node" data-id="${id}">
+            <div class="doc-row" data-action="${ACTION.SELECT}" data-id="${id}">
+              ${title}
+              <button
+                class="doc-actions"
+                data-action="${ACTION.DELETE}"
+                data-id="${id}"
+                title="삭제"
+                aria-label="문서 삭제"
+              >-</button>
+              <button
+                class="doc-actions"
+                data-action="${ACTION.ADD_CHILD}"
+                data-id="${id}"
+                title="하위 문서 추가"
+                aria-label="하위 문서 추가"
+              >＋</button>
+            </div>
+            ${
+              children.length
+                ? `<div class="doc-children">${renderNodes(children)}</div>`
+                : ""
+            }
           </div>
-          ${
-            children.length
-              ? `<div class="doc-children">${renderNodes(children)}</div>`
-              : ""
-          }
-        </div>
-      `;
+        `;
       })
       .join("");
   }
@@ -108,11 +95,14 @@ export function createSidebar({ mountElement, onSelect }) {
     mountElement.querySelectorAll(".doc-row.selected").forEach((row) => {
       row.classList.remove("selected");
     });
+
     if (state.selectedId == null) return;
+
     const node = mountElement.querySelector(
       `.doc-node[data-id="${state.selectedId}"]`
     );
     const row = node ? node.querySelector(".doc-row") : null;
+
     if (row) row.classList.add("selected");
   }
 
