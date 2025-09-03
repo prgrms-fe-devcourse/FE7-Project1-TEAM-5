@@ -46,7 +46,8 @@ export function createSidebar({ onSelect }) {
       return nodes
         .map((node) => {
           const id = Number(node.id);
-          const title = node.title || "제목 없음";
+          const rawTitle = (node.title ?? "").toString();
+          const title = rawTitle.trim() || "New page";
           const children = node.documents || [];
 
           return `
@@ -124,7 +125,7 @@ export function createSidebar({ onSelect }) {
       // 하위 문서 추가: 내부에서 트리 갱신 + 선택 표시, 외부에 알림
       if (action === ACTION.ADD_CHILD) {
         const created = await createDocument({
-          title: "제목 없음",
+          title: "New page",
           parent: id,
         });
         await load(created.id); // 새 문서를 선택 상태로 갱신
