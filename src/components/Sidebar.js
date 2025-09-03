@@ -1,11 +1,17 @@
 import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
 
-const ACTION = { SELECT: "select", ADD_CHILD: "add-child", DELETE: "delete" };
+const ACTION = {
+  SELECT: "select",
+  ADD_CHILD: "add-child",
+  DELETE: "delete",
+  ADD_ROOT: "add-root",
+};
 
 // 사이드바를 만들어 주는 함수
 export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
   const mountElement = document.querySelector(".doc-tree");
+  const sidebarEl = document.querySelector("aside");
   const state = {
     tree: [], // 문서 트리 데이터
     selectedId: null, // 현재 선택 문서 id
@@ -30,12 +36,6 @@ export function createSidebar({ onSelect }) {
     state.selectedId = Number(id);
     syncSelectedHighlight();
   }
-
-  // 이벤트 해제 및 정리
-  function destroy() {
-    mountElement.removeEventListener("click", handleClick);
-    mountElement.innerHTML = "";
-  } // 메모리 누수나 중복 이벤트 문제를 방지
 
   /* 내부 헬퍼들 */
   // 트리 렌더링 (재귀 렌더링)
@@ -107,12 +107,25 @@ export function createSidebar({ onSelect }) {
   async function handleClick(e) {
     const el = e.target.closest("[data-action]");
     if (!el) return;
-
     const action = el.dataset.action;
+
     const id = Number(el.dataset.id);
-    if (Number.isNaN(id)) return;
 
     try {
+      // 루트 문서 추가
+      if (action === ACTION.ADD_ROOT) {
+        const created = await createDocument({
+          title: "New page",
+          parent: null,
+        });
+        await load(created.id);
+        onSelect && onSelect(created.id);
+
+        return;
+      }
+
+      if (Number.isNaN(id)) return;
+
       // 선택: 표시만 바꾸고, 외부(onSelect)에 "선택됨" 알림
       if (action === ACTION.SELECT) {
         state.selectedId = id;
@@ -153,9 +166,41 @@ export function createSidebar({ onSelect }) {
     }
   }
 
+  // 문서 제목 갱신 (외부에서 제목 바뀌었을 때 호출)
+  function updateTitle(id, newTitle) {
+    const findAndUpdate = (nodes) => {
+      for (const node of nodes) {
+        if (Number(node.id) === Number(id)) {
+          // id 비교
+          node.title = newTitle;
+          return true;
+        }
+        // 자식 요소가 있으면 자식요소로 재귀함수 호출
+        if (node.documents && findAndUpdate(node.documents)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    if (findAndUpdate(state.tree)) {
+      //재귀함수 호출 후 id가 존재하면 렌더링
+      render();
+    }
+  }
+
+  // 문서 제목 변경 이벤트 핸들러
+  function onTitleUpdated(e) {
+    const { id, title } = e.detail;
+    updateTitle(id, title);
+  }
+
+  // 문서 제목 변경 이벤트 바인딩
+  window.addEventListener("documentTitleUpdated", onTitleUpdated);
+
   // 초기 이벤트 바인딩
-  mountElement.addEventListener("click", handleClick);
+  sidebarEl.addEventListener("click", handleClick);
 
   // 외부에 공개
-  return { load, setSelected, destroy };
+  return { load, setSelected };
 }
