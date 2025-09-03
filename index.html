@@ -1,9 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crap Burger</title>
+    <title>Team5</title>
+
+    <link rel="stylesheet" href="./src/styles/global.css" />
   </head>
-  <body></body>
+
+  <body>
+    <aside>
+      <div class="sidebar-title">
+        <img src="./assets/Icon.svg" class="Icon" />
+        <h3>너드호소인들의 Notion</h3>
+      </div>
+      <div class="SearchContainer">
+        <input type="text" placeholder="검색기능" /><button>⌕</button>
+      </div>
+      <div>
+        <span>개인 페이지</span>
+        <button
+          data-action="add-root"
+          title="루트 문서 추가"
+          aria-label="루트 문서 추가"
+        >
+          ＋
+        </button>
+      </div>
+      <!-- 문서 트리 -->
+      <div class="doc-tree"></div>
+    </aside>
+    <main>
+      <input class="Title" type="text" placeholder="New page" />
+
+      <textarea
+        class="EditorContainer"
+        placeholder="여기에 내용을 작성하세요"
+      ></textarea>
+    </main>
+    <script type="module" src="./src/index.js"></script>
+  </body>
 </html>
