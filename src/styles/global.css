@@ -5,32 +5,22 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   height: 100vh;
   background-color: #fffffffd;
-  /* 전체 배경색 - 노션의 연한 회색 */
   color: #37352f;
-  /* 기본 텍스트 색상 */
   line-height: 1.5;
 }
 
 /* 사이드바 (aside) 스타일 */
 aside {
   width: 280px;
-  /* 너비 약간 증가 */
   background-color: #d1d3da60;
-  /* 흰색 배경 */
   padding: 10px;
-  /* 내부 여백 */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  /* 경계선 대신 부드러운 그림자 */
   display: flex;
   flex-direction: column;
   gap: 5px;
-  /* 요소 간 간격 */
   border-right: 1px solid #e0e0e0;
-  /* 연한 오른쪽 경계선 */
   box-sizing: border-box;
-  /* 패딩이 너비에 포함되도록 */
   overflow-y: auto;
-  /* 내용이 길어지면 스크롤 */
 }
 
 /* 사이드바 헤더 (너드호소인들의 Notion) */
@@ -54,7 +44,6 @@ aside>div:first-child h3 {
   flex-grow: 1;
   border: none;
   background-color: #f1f1f1;
-  /* 연한 배경 */
   padding: 8px 10px;
   border-radius: 5px;
   box-sizing: border-box;
@@ -80,7 +69,6 @@ aside>div:first-child h3 {
 
 /* 개인 페이지 버튼 */
 aside>div:nth-child(3) {
-  /* "개인 페이지"와 "+" 버튼을 감싸는 div */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,26 +105,21 @@ aside>div:nth-child(3) button:hover {
 /* 문서 트리 (.doc-tree) */
 .doc-tree {
   list-style: none;
-  /* 리스트 점 제거 */
   padding: 0;
   margin: 0;
   flex-grow: 1;
-  /* 남은 공간 차지 */
   padding-top: 5px;
-  /* 상단 여백 */
 }
 
 /* 각 문서 노드 (.doc-node) */
 .doc-node {
   margin-left: 10px;
-  /* 하위 문서 들여쓰기 */
 }
 
 /* 문서 행 (.doc-row) - 클릭 가능한 영역 */
 .doc-row {
   display: flex;
   justify-content: space-between;
-  /* 양 끝 정렬 */
   align-items: center;
   padding: 5px 10px;
   border-radius: 3px;
@@ -145,9 +128,7 @@ aside>div:nth-child(3) button:hover {
   font-size: 14px;
   color: #37352f;
   position: relative;
-  /* 버튼 컨테이너를 숨기고 호버 시 표시 */
   white-space: nowrap;
-  /* 텍스트가 줄바꿈되지 않도록 */
 }
 
 .doc-row:hover {
@@ -157,10 +138,8 @@ aside>div:nth-child(3) button:hover {
 /* 선택된 문서 행 스타일 */
 .doc-row.selected {
   background-color: rgba(59, 130, 246, 0.1);
-  /* 연한 파란색 배경 */
   font-weight: bold;
   color: #3b82f6;
-  /* 파란색 텍스트 */
 }
 
 /* 문서 액션 버튼들 (.doc-actions) */
@@ -177,9 +156,7 @@ aside>div:nth-child(3) button:hover {
 
 .doc-row:hover .doc-actions {
   opacity: 1;
-  /* 호버 시 버튼 표시 */
   pointer-events: auto;
-  /* 호버 시 클릭 가능 */
 }
 
 .doc-actions:hover {
@@ -189,19 +166,15 @@ aside>div:nth-child(3) button:hover {
 .doc-actions-container {
   display: flex;
   gap: 5px;
-  /* 버튼들 사이의 간격 */
   transition: opacity 0.2s;
   opacity: 0;
-  /* 기본적으로 숨김 */
   pointer-events: none;
-  /* 숨겨진 상태에서 클릭 방지 */
 }
 
 /* 문서 행에 호버 시 액션 버튼 표시 */
 .doc-row:hover .doc-actions-container {
   opacity: 1;
   pointer-events: auto;
-  /* 호버 시 클릭 가능 */
 }
 
 
@@ -209,31 +182,24 @@ aside>div:nth-child(3) button:hover {
 main {
   flex-grow: 1;
   padding: 50px 70px;
-  /* 좌우 여백을 노션처럼 넓게 */
   overflow-y: auto;
-  /* 내용이 길어지면 스크롤 */
 }
 
 /* 문서 제목 입력창 (input.Title) */
 input.Title {
   width: 100%;
   font-size: 36px;
-  /* 노션처럼 큰 제목 폰트 */
   font-weight: 700;
   border: none;
   outline: none;
-  /* 포커스 시 테두리 제거 */
   padding: 10px 0;
   margin-bottom: 20px;
-  /* 제목과 내용 간 간격 */
   color: #333;
   background-color: transparent;
-  /* 배경 투명 */
 }
 
 input.Title::placeholder {
   color: #ccc;
-  /* 플레이스홀더 색상 */
 }
 
 
@@ -242,17 +208,14 @@ textarea.EditorContainer {
   margin: 0;
   width: 100%;
   height: calc(100% - 120px);
-  /* 제목 높이 고려하여 조정 */
   padding: 10px 0;
   background-color: #ffffff;
-  /* 흰색 배경 */
   border: none;
   outline: none;
   font-size: 16px;
   line-height: 1.6;
   color: #37352f;
   resize: none;
-  /* 사용자가 크기를 조절하지 못하게 함 */
 }
 
 textarea.EditorContainer::placeholder {
