@@ -38,55 +38,53 @@ export function createSidebar({ onSelect }) {
   } // 메모리 누수나 중복 이벤트 문제를 방지
 
   /* 내부 헬퍼들 */
-  // 트리 렌더링
+  // 트리 렌더링 (재귀 렌더링)
   function render() {
-    mountElement.innerHTML = "";
-    const treeRoot = document.createElement("div");
-    treeRoot.className = "doc-tree";
-    treeRoot.innerHTML = renderNodes(state.tree);
-    mountElement.appendChild(treeRoot);
-  }
+    const build = (nodes) => {
+      if (!Array.isArray(nodes) || nodes.length === 0) return ""; // 재귀 종결
 
-  // 트리 노드 재귀 렌더링
-  function renderNodes(nodes) {
-    if (!Array.isArray(nodes) || nodes.length === 0) return "";
+      return nodes
+        .map((node) => {
+          const id = Number(node.id);
+          const title = node.title || "제목 없음";
+          const children = node.documents || [];
 
-    return nodes
-      .map((node) => {
-        const id = Number(node.id);
-        const title = node.title || "제목 없음";
-        const children = node.documents || [];
+          return `
+            <div class="doc-node" data-id="${id}">
+              <div class="doc-row" data-action="${
+                ACTION.SELECT
+              }" data-id="${id}">
+                ${title}
+                <div class="doc-actions-container">
+                  <button
+                    class="doc-actions"
+                    data-action="${ACTION.DELETE}"
+                    data-id="${id}"
+                    title="삭제"
+                    aria-label="문서 삭제"
+                  >-</button>
+                  <button
+                    class="doc-actions"
+                    data-action="${ACTION.ADD_CHILD}"
+                    data-id="${id}"
+                    title="하위 문서 추가"
+                    aria-label="하위 문서 추가"
+                  >＋</button>
+                </div>
+              </div>
+              ${
+                children.length
+                  ? `<div class="doc-children">${build(children)}</div>`
+                  : ""
+              }
+            </div>
+          `;
+        })
+        .join("");
+    };
 
-        return `
-          <div class="doc-node" data-id="${id}">
-            <div class="doc-row" data-action="${ACTION.SELECT}" data-id="${id}">
-              ${title}
-              <div class="doc-actions-container">
-                <button
-                  class="doc-actions"
-                  data-action="${ACTION.DELETE}"
-                  data-id="${id}"
-                  title="삭제"
-                  aria-label="문서 삭제"
-                >-</button>
-                <button
-                  class="doc-actions"
-                  data-action="${ACTION.ADD_CHILD}"
-                  data-id="${id}"
-                  title="하위 문서 추가"
-                  aria-label="하위 문서 추가"
-                >＋</button>
-               </div>
-            </div>햐
-            ${
-              children.length
-                ? `<div class="doc-children">${renderNodes(children)}</div>`
-                : ""
-            }
-          </div>
-        `;
-      })
-      .join("");
+    // 한 번의 DOM 갱신으로 전체 트리를 교체
+    mountElement.innerHTML = build(state.tree);
   }
 
   // 선택 문서 강조 표시 동기화
@@ -115,11 +113,11 @@ export function createSidebar({ onSelect }) {
     if (Number.isNaN(id)) return;
 
     try {
-      // 선택: 표시만 바꾸고, 외부(onSelect)에 “선택됨” 알림
+      // 선택: 표시만 바꾸고, 외부(onSelect)에 "선택됨" 알림
       if (action === ACTION.SELECT) {
         state.selectedId = id;
         syncSelectedHighlight();
-        onSelect && onSelect(id); // 라우팅/에디터는 외부에서
+        onSelect && onSelect(id);
         return;
       }
 
@@ -130,7 +128,7 @@ export function createSidebar({ onSelect }) {
           parent: id,
         });
         await load(created.id); // 새 문서를 선택 상태로 갱신
-        onSelect && onSelect(created.id); // 라우팅/에디터는 외부
+        onSelect && onSelect(created.id);
         return;
       }
 
@@ -139,13 +137,14 @@ export function createSidebar({ onSelect }) {
         const ok = confirm("삭제할까요? 하위 문서도 함께 삭제됩니다.");
         if (!ok) return;
 
-        const wasSelected = state.selectedId === id;
+        const isSelected = state.selectedId === id;
         await deleteDocument(id);
-        await load(undefined); // 선택 유지한 채 트리만 갱신
 
-        if (wasSelected) {
-          // 현재 보고 있던 걸 지웠다면 외부에 선택 해제 신호
+        if (isSelected) {
+          await load(null); // 선택 해제 상태로 트리만 갱신
           onSelect && onSelect(null);
+        } else {
+          await load(state.selectedId); // 기존 선택 유지
         }
         return;
       }

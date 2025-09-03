@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team5</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team5</title>
-
-  <link rel="stylesheet" href="./src/styles/global.css" />
-</head>
+    <link rel="stylesheet" href="./src/styles/global.css" />
+  </head>
 
 <body>
   <aside>
@@ -27,7 +26,7 @@
       <!-- 1단계 루트 문서 -->
       <div class="doc-node" data-id="1">
         <div class="doc-row">
-          New Page
+          루트 A
           <div class="doc-actions-container">
             <button id="doc-del" class="doc-actions" data-action="delete" data-id="1">-</button>
             <button id="doc-add" class="doc-actions" data-action="add-child" data-id="1">＋</button>
@@ -40,10 +39,11 @@
   <main>
     <input class="Title" type="text" placeholder="New page" />
 
-    <textarea class="EditorContainer" placeholder="여기에 내용을 작성하세요"></textarea>
-  </main>
-  <script type="module" src="./src/index.js"></script>
-  <script type="module" src="./src/router.js"></script>
-</body>
-
+      <textarea
+        class="EditorContainer"
+        placeholder="여기에 내용을 작성하세요"
+      ></textarea>
+    </main>
+    <script type="module" src="./src/index.js"></script>
+  </body>
 </html>
