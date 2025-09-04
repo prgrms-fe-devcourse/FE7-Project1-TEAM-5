@@ -1,4 +1,5 @@
 import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
+import { findNode, collectSubtreeIds } from "../utils/tree.js";
 
 const ACTION = {
   SELECT: "select",
@@ -145,17 +146,33 @@ export function createSidebar({ onSelect }) {
         return;
       }
 
-      // 삭제: 내부에서 트리 갱신, 선택 문서였으면 외부에 null 알림
+      // 삭제: 하위까지 재귀적으로 제거 (자식 → 부모 순)
       if (action === ACTION.DELETE) {
         const ok = confirm("삭제할까요? 하위 문서도 함께 삭제됩니다.");
         if (!ok) return;
 
-        const isSelected = state.selectedId === id;
-        await deleteDocument(id);
+        // 현재 트리에서 대상 노드 찾기
+        const targetNode = findNode(state.tree, id);
+        if (!targetNode) return;
 
-        if (isSelected) {
-          await load(null); // 선택 해제 상태로 트리만 갱신
-          onSelect && onSelect(null);
+        // 서브트리 id 수집 (자식에서 부모 순)
+        const idsToDelete = collectSubtreeIds(targetNode);
+
+        // 현재 선택된 문서가 서브트리에 포함되는지 체크
+        // (삭제 후 에디터가 사라진 문서를 참조하지 않도록 막기 위함)
+        const selectedInSubtree = idsToDelete.includes(
+          Number(state.selectedId)
+        );
+
+        // 안전하게 순차 삭제
+        for (const delId of idsToDelete) {
+          await deleteDocument(delId);
+        }
+
+        // 트리/선택 동기화
+        if (selectedInSubtree) {
+          await load(null); // 선택 해제로 갱신
+          onSelect && onSelect(null); // 라우터: "/"
         } else {
           await load(state.selectedId); // 기존 선택 유지
         }
@@ -168,25 +185,13 @@ export function createSidebar({ onSelect }) {
 
   // 문서 제목 갱신 (외부에서 제목 바뀌었을 때 호출)
   function updateTitle(id, newTitle) {
-    const findAndUpdate = (nodes) => {
-      for (const node of nodes) {
-        if (Number(node.id) === Number(id)) {
-          // id 비교
-          node.title = newTitle;
-          return true;
-        }
-        // 자식 요소가 있으면 자식요소로 재귀함수 호출
-        if (node.documents && findAndUpdate(node.documents)) {
-          return true;
-        }
-      }
-      return false;
-    };
+    const node = findNode(state.tree, id); // 유틸 재사용
+    if (!node) return false;
 
-    if (findAndUpdate(state.tree)) {
-      //재귀함수 호출 후 id가 존재하면 렌더링
-      render();
-    }
+    node.title = newTitle;
+    render();
+
+    return true;
   }
 
   // 문서 제목 변경 이벤트 핸들러
