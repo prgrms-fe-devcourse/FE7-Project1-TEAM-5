@@ -211,8 +211,8 @@ export function createSidebar({ onSelect }) {
       for (const node of nodes) {
         if (node.title.includes(searchText.value)) {
           state.selectedId = Number(node.id);
-          syncSelectedHighlight();
           onSelect && onSelect(state.selectedId);
+          searchText.value = '';
           return true;
         } // 자식 요소가 있으면 자식요소로 재귀함수 호출
         if (node.documents && findAndUpdate(node.documents)) {
@@ -226,6 +226,7 @@ export function createSidebar({ onSelect }) {
     if (findAndUpdate(state.tree)) {
       //재귀함수 호출 후 id가 존재하면 렌더링
       render();
+      syncSelectedHighlight();
     }
   } //enter나 버튼이 클랙 되었을 때 실행되는 이벤트
   searchBtn.addEventListener('click', findAndUpdate);
