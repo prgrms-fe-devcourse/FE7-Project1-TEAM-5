@@ -1,18 +1,18 @@
-import { listDocuments, createDocument, deleteDocument } from "../api/api.js";
-import { findNode, collectSubtreeIds } from "../utils/tree.js";
+import { listDocuments, createDocument, deleteDocument } from '../api/api.js';
+import { findNode, collectSubtreeIds } from '../utils/tree.js';
 
 const ACTION = {
-  SELECT: "select",
-  ADD_CHILD: "add-child",
-  DELETE: "delete",
-  ADD_ROOT: "add-root",
+  SELECT: 'select',
+  ADD_CHILD: 'add-child',
+  DELETE: 'delete',
+  ADD_ROOT: 'add-root',
 };
 
 // 사이드바를 만들어 주는 함수
 export function createSidebar({ onSelect }) {
   // 내부 상태 (바깥에서 직접 못 만짐)
-  const mountElement = document.querySelector(".doc-tree");
-  const sidebarEl = document.querySelector("aside");
+  const mountElement = document.querySelector('.doc-tree');
+  const sidebarEl = document.querySelector('aside');
   const state = {
     tree: [], // 문서 트리 데이터
     selectedId: null, // 현재 선택 문서 id
@@ -42,12 +42,12 @@ export function createSidebar({ onSelect }) {
   // 트리 렌더링 (재귀 렌더링)
   function render() {
     const build = (nodes) => {
-      if (!Array.isArray(nodes) || nodes.length === 0) return ""; // 재귀 종결
+      if (!Array.isArray(nodes) || nodes.length === 0) return ''; // 재귀 종결
 
       return nodes
         .map((node) => {
           const id = Number(node.id);
-          const title = node.title || "제목 없음";
+          const title = node.title || 'New page';
           const children = node.documents || [];
 
           return `
@@ -76,12 +76,12 @@ export function createSidebar({ onSelect }) {
               ${
                 children.length
                   ? `<div class="doc-children">${build(children)}</div>`
-                  : ""
+                  : ''
               }
             </div>
           `;
         })
-        .join("");
+        .join('');
     };
 
     // 한 번의 DOM 갱신으로 전체 트리를 교체
@@ -90,8 +90,8 @@ export function createSidebar({ onSelect }) {
 
   // 선택 문서 강조 표시 동기화
   function syncSelectedHighlight() {
-    mountElement.querySelectorAll(".doc-row.selected").forEach((row) => {
-      row.classList.remove("selected");
+    mountElement.querySelectorAll('.doc-row.selected').forEach((row) => {
+      row.classList.remove('selected');
     });
 
     if (state.selectedId == null) return;
@@ -99,14 +99,14 @@ export function createSidebar({ onSelect }) {
     const node = mountElement.querySelector(
       `.doc-node[data-id="${state.selectedId}"]`
     );
-    const row = node ? node.querySelector(".doc-row") : null;
+    const row = node ? node.querySelector('.doc-row') : null;
 
-    if (row) row.classList.add("selected");
+    if (row) row.classList.add('selected');
   }
 
   // 클릭 이벤트 핸들러 (이벤트 위임)
   async function handleClick(e) {
-    const el = e.target.closest("[data-action]");
+    const el = e.target.closest('[data-action]');
     if (!el) return;
     const action = el.dataset.action;
 
@@ -116,7 +116,7 @@ export function createSidebar({ onSelect }) {
       // 루트 문서 추가
       if (action === ACTION.ADD_ROOT) {
         const created = await createDocument({
-          title: "New page",
+          title: '',
           parent: null,
         });
         await load(created.id);
@@ -138,7 +138,7 @@ export function createSidebar({ onSelect }) {
       // 하위 문서 추가: 내부에서 트리 갱신 + 선택 표시, 외부에 알림
       if (action === ACTION.ADD_CHILD) {
         const created = await createDocument({
-          title: "제목 없음",
+          title: '',
           parent: id,
         });
         await load(created.id); // 새 문서를 선택 상태로 갱신
@@ -148,7 +148,7 @@ export function createSidebar({ onSelect }) {
 
       // 삭제: 하위까지 재귀적으로 제거 (자식 → 부모 순)
       if (action === ACTION.DELETE) {
-        const ok = confirm("삭제할까요? 하위 문서도 함께 삭제됩니다.");
+        const ok = confirm('삭제할까요? 하위 문서도 함께 삭제됩니다.');
         if (!ok) return;
 
         // 현재 트리에서 대상 노드 찾기
@@ -200,11 +200,47 @@ export function createSidebar({ onSelect }) {
     updateTitle(id, title);
   }
 
+  ///////////////////////////////////////////////
+  const searchBtn = document.querySelector('#searchBtn');
+  const searchText = document.querySelector('#searchText'); // 검색 기능
+
+  function findAndUpdate() {
+    if (searchText.value == null) return;
+    const findAndUpdate = (nodes) => {
+      // id 비교
+      for (const node of nodes) {
+        if (node.title.includes(searchText.value)) {
+          state.selectedId = Number(node.id);
+          syncSelectedHighlight();
+          onSelect && onSelect(state.selectedId);
+          return true;
+        } // 자식 요소가 있으면 자식요소로 재귀함수 호출
+        if (node.documents && findAndUpdate(node.documents)) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    if (findAndUpdate(state.tree)) {
+      //재귀함수 호출 후 id가 존재하면 렌더링
+      render();
+    }
+  } //enter나 버튼이 클랙 되었을 때 실행되는 이벤트
+  searchBtn.addEventListener('click', findAndUpdate);
+  searchText.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      findAndUpdate();
+    }
+  });
+  //////////////////////////////////////////
+
   // 문서 제목 변경 이벤트 바인딩
-  window.addEventListener("documentTitleUpdated", onTitleUpdated);
+  window.addEventListener('documentTitleUpdated', onTitleUpdated);
 
   // 초기 이벤트 바인딩
-  sidebarEl.addEventListener("click", handleClick);
+  sidebarEl.addEventListener('click', handleClick);
 
   // 외부에 공개
   return { load, setSelected };
